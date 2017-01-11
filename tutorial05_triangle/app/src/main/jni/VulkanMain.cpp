@@ -18,6 +18,7 @@
 #include <android_native_app_glue.h>
 #include "vulkan_wrapper.h"
 #include "VulkanMain.hpp"
+#include "TraceTime.h"
 
 // Android log function wrappers
 static const char* kTAG = "Vulkan-Tutorial04";
@@ -30,12 +31,14 @@ static const char* kTAG = "Vulkan-Tutorial04";
 
 // Vulkan call wrapper
 #define CALL_VK(func)                                                 \
+  BeginTrace(getFunctionName(#func));                                 \
   if (VK_SUCCESS != (func)) {                                         \
     __android_log_print(ANDROID_LOG_ERROR, "Tutorial ",               \
                         "Vulkan error. File[%s], line[%d]", __FILE__, \
                         __LINE__);                                    \
     assert(false);                                                    \
-  }
+  }                                                                   \
+  EndTrace(getFunctionName(#func));
 
 // Global Variables ...
 struct VulkanDeviceInfo {

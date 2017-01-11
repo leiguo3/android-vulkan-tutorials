@@ -14,17 +14,22 @@
 #include <android/log.h>
 #include <android_native_app_glue.h>
 #include "VulkanMain.hpp"
+#include "TraceTime.h"
 
 // Process the next main command.
 void handle_cmd(android_app* app, int32_t cmd) {
   switch (cmd) {
     case APP_CMD_INIT_WINDOW:
       // The window is being shown, get it ready.
+      BeginTrace("InitVulkan");
       InitVulkan(app);
+          EndTrace("InitVulkan");
       break;
     case APP_CMD_TERM_WINDOW:
       // The window is being hidden or closed, clean it up.
+      BeginTrace("DeleteVulkan");
       DeleteVulkan();
+          EndTrace("DeleteVulkan");
       break;
     default:
       __android_log_print(ANDROID_LOG_INFO, "Vulkan Tutorials",
@@ -52,7 +57,9 @@ void android_main(struct android_app* app) {
 
     // render if vulkan is ready
     if (IsVulkanReady()) {
+      BeginTrace("VulkanDrawFrame");
       VulkanDrawFrame();
+      EndTrace("VulkanDrawFrame");
     }
   } while (app->destroyRequested == 0);
 }
